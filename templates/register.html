@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register | GMTools</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <style>
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: radial-gradient(circle at top right, #1e293b, #0f172a);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem;
+    }
+    input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-up { animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+  </style>
+</head>
+<body class="text-slate-200 min-h-screen flex items-center justify-center p-6">
+
+<div class="w-full max-w-md animate-fade-up">
+    <div class="flex justify-center mb-10">
+        <div class="w-16 h-16 bg-blue-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-600/20">
+            <i data-feather="package" class="text-white w-8 h-8"></i>
+        </div>
+    </div>
+    
+    <div class="glass-card p-10">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-extrabold text-white tracking-tight">Onboard Staff</h1>
+            <p class="text-slate-400 mt-2 font-medium">Register a new analyst for the floor.</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="mb-6 p-4 rounded-xl text-sm font-medium bg-{{ 'blue' if category == 'success' else 'red' }}-500/10 text-{{ 'blue' if category == 'success' else 'red' }}-400 border border-{{ 'blue' if category == 'success' else 'red' }}-500/20">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="post" action="/register" class="space-y-6">
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-slate-500 uppercase italic tracking-widest ml-1">Username</label>
+                <input type="text" name="username" required 
+                       class="w-full bg-slate-900/50 border border-white/10 rounded-2xl py-3.5 px-6 text-white focus:outline-none transition-all">
+            </div>
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-slate-500 uppercase italic tracking-widest ml-1">Work Email</label>
+                <input type="email" name="email" required 
+                       class="w-full bg-slate-900/50 border border-white/10 rounded-2xl py-3.5 px-6 text-white focus:outline-none transition-all">
+            </div>
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-slate-500 uppercase italic tracking-widest ml-1">Staff Access Key</label>
+                <input type="password" name="password" required 
+                       class="w-full bg-slate-900/50 border border-white/10 rounded-2xl py-3.5 px-6 text-white focus:outline-none transition-all">
+            </div>
+            
+            <button type="submit" class="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-extrabold rounded-2xl shadow-xl shadow-blue-600/20 transition-all active:scale-[0.98] mt-4 flex items-center justify-center gap-3">
+                <i data-feather="check-circle" class="w-5 h-5"></i>
+                FINALIZE REGISTRATION
+            </button>
+        </form>
+
+        <div class="mt-8 text-center">
+            <p class="text-slate-500 text-sm font-medium">Already on the floor? <a href="/login" class="text-blue-400 hover:text-blue-300 ml-1">Login here</a></p>
+        </div>
+    </div>
+    
+    <div class="mt-10 text-center opacity-30 italic">
+        <p class="text-xs text-slate-500 font-bold tracking-widest uppercase">GM TRADERS • STEEL INTEL v4.0</p>
+    </div>
+</div>
+
+<script>
+  feather.replace();
+</script>
+</body>
+</html>

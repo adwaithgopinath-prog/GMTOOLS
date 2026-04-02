@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}GMTools Dashboard{% endblock %}</title>
+    
+    <!-- Modern Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Frameworks -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: radial-gradient(circle at top right, #1e293b, #0f172a);
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-4px);
+        }
+
+        .sidebar-link {
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-link:hover {
+            background: rgba(59, 130, 246, 0.15);
+            color: #3b82f6;
+        }
+
+        .active-link {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border-right: 4px solid #3b82f6;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="text-slate-200 min-h-screen">
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 border-r border-slate-800 flex flex-col bg-slate-900/50 backdrop-blur-xl">
+            <div class="p-6 flex items-center gap-3">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                    <i data-feather="package" class="text-white w-6 h-6"></i>
+                </div>
+                <h1 class="text-xl font-bold tracking-tight text-white">GMTools</h1>
+            </div>
+
+            <nav class="flex-1 px-4 space-y-2 mt-4">
+                <a href="{{ url_for('index') }}" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl {% if request.path == '/' %}active-link text-blue-400{% endif %}">
+                    <i data-feather="grid" class="w-5 h-5"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('sales_page') }}" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl {% if request.path == '/sales' %}active-link text-blue-400{% endif %}">
+                    <i data-feather="trending-up" class="w-5 h-5"></i>
+                    <span>Sales Overview</span>
+                </a>
+                <a href="{{ url_for('whatsapp_order') }}" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl {% if request.path == '/whatsapp_order' %}active-link text-blue-400{% endif %}">
+                    <i data-feather="message-circle" class="w-5 h-5"></i>
+                    <span>WhatsApp Parse</span>
+                </a>
+                <div class="pt-6 pb-2 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Management</div>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400">
+                    <i data-feather="users" class="w-5 h-5"></i>
+                    <span>Distributors</span>
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400">
+                    <i data-feather="settings" class="w-5 h-5"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-slate-800">
+                <div class="flex items-center gap-3 p-3 glass-card bg-slate-800/20">
+                    <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600">
+                        <i data-feather="user" class="w-5 h-5"></i>
+                    </div>
+                    <div class="flex-1 overflow-hidden">
+                        <p class="text-sm font-medium text-white truncate">{{ current_user.username }}</p>
+                        <p class="text-xs text-slate-400 truncate capitalize">{{ current_user.role }}</p>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="p-2 hover:bg-red-500/10 rounded-lg text-slate-400 hover:text-red-400 transition-colors">
+                        <i data-feather="log-out" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col min-w-0 bg-slate-950/20">
+            <!-- Header -->
+            <header class="h-16 border-b border-slate-800 flex items-center justify-between px-8 bg-slate-900/30 backdrop-blur-md sticky top-0 z-50">
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 text-slate-400">
+                        <i data-feather="clock" class="w-4 h-4"></i>
+                        <span class="text-sm" id="live-time"></span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                     {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="px-4 py-1.5 rounded-full text-xs font-medium bg-{{ 'blue' if category == 'success' else 'red' }}-500/10 text-{{ 'blue' if category == 'success' else 'red' }}-400 border border-{{ 'blue' if category == 'success' else 'red' }}-500/20 animate-pulse">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </header>
+
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto overflow-x-hidden p-8">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Init Icons
+        feather.replace();
+
+        // Live Clock
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('live-time').innerText = now.toLocaleString();
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+    </script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

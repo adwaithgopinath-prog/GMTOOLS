@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}GMTools | WhatsApp Parsing Engine{% endblock %}
+
+{% block content %}
+<div class="space-y-10 animate-fade-in">
+     <!-- Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+            <h2 class="text-4xl font-extrabold text-white tracking-tight">Parser Engine</h2>
+            <p class="text-slate-400 mt-1 font-medium italic">Transform raw text into warehouse transactions.</p>
+        </div>
+        <div class="flex gap-3">
+             <div class="p-3 bg-teal-500/10 rounded-xl border border-teal-500/20 text-teal-400 font-bold flex items-center gap-2 text-xs">
+                <i data-feather="terminal" class="w-4 h-4"></i>
+                SYSTE_ACTIVE_V4.2
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Tool Interface -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        
+        <!-- Input Area -->
+        <div class="glass-card p-10 bg-gradient-to-br from-blue-600/5 to-transparent border-blue-500/20 shadow-2xl shadow-slate-950/40 transform transition-transform hover:scale-[1.01]">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="p-4 bg-blue-600/20 rounded-2xl text-blue-400">
+                    <i data-feather="message-square" class="w-8 h-8"></i>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-black text-white tracking-tighter uppercase italic">Raw Input Interface</h3>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mt-0.5">WhatsApp / Message Stream</p>
+                </div>
+            </div>
+
+            <form method="post" action="{{ url_for('whatsapp_order') }}" class="space-y-8">
+                <div class="space-y-3">
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-2 italic">Data Stream Content (Format: Qty x Product Name)</label>
+                    <textarea name="whatsapp_text" rows="10" 
+                              class="w-full bg-slate-900 border border-white/10 rounded-3xl py-6 px-8 text-white focus:ring-2 focus:ring-blue-600 focus:outline-none placeholder:text-slate-700 font-mono text-sm leading-relaxed" 
+                              placeholder="5 x 10mm Mild Steel Plate&#10;2 x 20mm Rod Intel&#10;..."></textarea>
+                </div>
+                
+                <button type="submit" class="group w-full py-5 bg-blue-600 hover:bg-white text-white hover:text-blue-600 font-black rounded-3xl shadow-xl shadow-blue-600/20 transition-all flex items-center justify-center gap-4 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-400/0 via-white/10 to-blue-400/0 -translate-x-full group-hover:animate-shimmer"></div>
+                    <i data-feather="zap" class="w-6 h-6"></i>
+                    EXECUTE PARSE SEQUENCE
+                </button>
+            </form>
+            
+            <div class="mt-10 p-6 bg-slate-950/40 rounded-2xl border border-white/5 space-y-4">
+                <h4 class="text-xs font-black text-blue-400 uppercase tracking-widest flex items-center gap-2">
+                    <i data-feather="info" class="w-4 h-4"></i>
+                    Parser Protocol
+                </h4>
+                <p class="text-xs text-slate-500 font-medium leading-relaxed italic">
+                    Ensure each entry follows the <span class="text-slate-300 font-bold">[Quantity] x [Product Name]</span> format. The engine cross-references the floor inventory in real-time. Unauthorized products will be logged as exceptions.
+                </p>
+            </div>
+        </div>
+
+        <!-- Output Visuals -->
+        <div class="space-y-8">
+            
+            <!-- Processed Hits -->
+            <div class="glass-card p-8 border-emerald-500/20 bg-emerald-500/5 shadow-2xl lg:min-h-[300px]">
+                <h3 class="text-xl font-bold text-white mb-8 flex items-center gap-3 italic">
+                    <i data-feather="check-circle" class="text-emerald-500 w-6 h-6"></i>
+                    Successful Pipeline Syncs
+                </h3>
+                
+                <div class="space-y-4">
+                    {% if processed_sales %}
+                        {% for sale in processed_sales %}
+                        <div class="flex items-center gap-4 p-4 bg-emerald-500/10 rounded-2xl border border-emerald-500/10">
+                            <i data-feather="check" class="text-emerald-500 w-4 h-4"></i>
+                            <span class="text-sm font-bold text-emerald-200 uppercase tracking-tight">{{ sale }}</span>
+                            <span class="ml-auto text-[10px] text-emerald-500 font-bold italic uppercase px-2 py-1 bg-emerald-500/5 rounded">Synced to Floor</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="flex flex-col items-center justify-center py-16 text-slate-600 italic">
+                            <i data-feather="layers" class="w-12 h-12 mb-4 opacity-20"></i>
+                            <p class="text-sm font-medium">No transactions identified in the current buffer.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Exceptions -->
+            <div class="glass-card p-8 border-rose-500/20 bg-rose-500/5 shadow-2xl lg:min-h-[300px]">
+                <h3 class="text-xl font-bold text-white mb-8 flex items-center gap-3 italic">
+                    <i data-feather="alert-triangle" class="text-rose-500 w-6 h-6"></i>
+                    Parser Exceptions
+                </h3>
+                
+                <div class="space-y-4">
+                    {% if unavailable_items %}
+                        {% for item in unavailable_items %}
+                        <div class="flex items-center gap-4 p-4 bg-rose-500/10 rounded-2xl border border-rose-500/10 animate-pulse">
+                            <i data-feather="x-circle" class="text-rose-500 w-4 h-4"></i>
+                            <span class="text-sm font-bold text-rose-300 uppercase tracking-tight">{{ item }}</span>
+                            <span class="ml-auto text-[10px] text-rose-500 font-bold italic uppercase px-2 py-1 bg-rose-500/5 rounded">Blocked</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                         <div class="flex flex-col items-center justify-center py-16 text-slate-600 italic">
+                            <i data-feather="shield" class="w-12 h-12 mb-4 opacity-20"></i>
+                            <p class="text-sm font-medium">Clear exception log. Pipeline report zero errors.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    @keyframes shimmer {
+        from { transform: translateX(-100%); }
+        to { transform: translateX(100%); }
+    }
+    .group-hover\:animate-shimmer {
+        animation: shimmer 1.5s infinite linear;
+    }
+</style>
+{% endblock %}
