@@ -8,7 +8,7 @@ import json
 import pandas as pd
 import click
 from datetime import datetime, date, timedelta
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, send_from_directory, send_file
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, send_from_directory, send_file, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_migrate import Migrate, stamp, upgrade
@@ -648,7 +648,7 @@ def register():
             flash("Username already exists.", "danger")
             return redirect(url_for("register"))
             
-        new_user = User(username=username, email=email)
+        new_user = User(username=username, email=email, role="staff")
         new_user.set_password(password)
         db.session.add(new_user)
         db.session.commit()
@@ -657,6 +657,44 @@ def register():
         return redirect(url_for("login"))
     
     return render_template("register.html")
+
+
+@app.route("/settings/users", methods=["GET", "POST"])
+@login_required
+def user_management():
+    """Let administrators provision staff accounts without enabling public signup."""
+    if current_user.role != "admin":
+        abort(403)
+
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "")
+        role = request.form.get("role", "staff").strip().lower()
+
+        if not username or not email or not password:
+            flash("Enter a username, email, and password.", "danger")
+        elif role not in {"admin", "staff"}:
+            flash("Choose a valid account role.", "danger")
+        elif len(password) < 12:
+            flash("Use a password with at least 12 characters.", "danger")
+        elif User.query.filter(db.or_(User.username == username, User.email == email)).first():
+            flash("That username or email is already in use.", "danger")
+        else:
+            user = User(username=username, email=email, role=role)
+            user.set_password(password)
+            db.session.add(user)
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+                flash("That username or email is already in use.", "danger")
+            else:
+                flash(f"Account created for {username}.", "success")
+                return redirect(url_for("user_management"))
+
+    users = User.query.order_by(User.created_at.desc(), User.id.desc()).all()
+    return render_template("user_management.html", users=users)
 
 @app.route("/logout")
 @login_required

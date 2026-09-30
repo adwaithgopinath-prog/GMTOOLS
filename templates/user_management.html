@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}User management | GMTOOLS{% endblock %}
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-7">
+  <header class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+    <div><p class="text-[11px] font-bold uppercase tracking-[.18em] text-cyan-400">Workspace settings</p><h1 class="text-3xl sm:text-4xl font-extrabold text-white mt-2">User management</h1><p class="text-sm text-slate-400 mt-2">Create login accounts for your team and choose their workspace role.</p></div>
+    <span class="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/5 px-3 py-2 text-xs text-emerald-300"><i data-feather="shield" class="w-3.5 h-3.5"></i> Administrator access</span>
+  </header>
+
+  <section class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] gap-5 items-start">
+    <div class="glass-card rounded-2xl overflow-hidden">
+      <div class="px-5 py-4 border-b border-white/5"><h2 class="text-sm font-bold text-white">Create a team account</h2><p class="text-xs text-slate-500 mt-1">Share the temporary sign-in details with the team member securely.</p></div>
+      <form method="post" class="p-5 space-y-4">
+        <label class="crm-label">Username *<input required name="username" autocomplete="off" maxlength="100" class="crm-input" placeholder="e.g. sales.team"></label>
+        <label class="crm-label">Email address *<input required name="email" type="email" maxlength="100" class="crm-input" placeholder="name@company.com"></label>
+        <label class="crm-label">Initial password *<input required name="password" type="password" minlength="12" autocomplete="new-password" class="crm-input" placeholder="At least 12 characters"><span class="block text-[11px] text-slate-500 mt-1.5">Use at least 12 characters. They can change it after signing in.</span></label>
+        <label class="crm-label">Role<select name="role" class="crm-input"><option value="staff">Staff · day-to-day access</option><option value="admin">Administrator · account management</option></select></label>
+        <button class="w-full rounded-xl bg-blue-600 hover:bg-blue-500 px-5 py-3 text-sm font-semibold text-white transition-colors"><i data-feather="user-plus" class="inline w-4 h-4 mr-1.5 -mt-0.5"></i>Create account</button>
+      </form>
+    </div>
+
+    <div class="glass-card rounded-2xl overflow-hidden">
+      <div class="flex items-center justify-between gap-3 px-5 py-4 border-b border-white/5"><div><h2 class="text-sm font-bold text-white">Workspace accounts</h2><p class="text-xs text-slate-500 mt-1">{{ users|length }} account{{ '' if users|length == 1 else 's' }} in this workspace</p></div><span class="rounded-lg border border-white/10 px-2.5 py-1.5 text-[11px] text-slate-400">{{ current_user.username }} · Admin</span></div>
+      <div class="overflow-x-auto"><table class="w-full min-w-[490px] text-left"><thead><tr class="text-[10px] uppercase tracking-wider text-slate-500 border-b border-white/5"><th class="px-5 py-3 font-semibold">Account</th><th class="px-4 py-3 font-semibold">Role</th><th class="px-4 py-3 font-semibold">Created</th></tr></thead><tbody class="divide-y divide-white/5">
+      {% for user in users %}<tr class="hover:bg-white/[.025]"><td class="px-5 py-4"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-slate-800 border border-white/5 flex items-center justify-center text-xs font-bold text-slate-200">{{ user.username[:1].upper() }}</div><div class="min-w-0"><p class="text-sm font-semibold text-slate-100 truncate">{{ user.username }}{% if user.id == current_user.id %}<span class="ml-1.5 text-[10px] text-slate-500">You</span>{% endif %}</p><p class="text-xs text-slate-500 truncate">{{ user.email }}</p></div></div></td><td class="px-4 py-4"><span class="rounded-full px-2.5 py-1 text-[10px] font-semibold {% if user.role == 'admin' %}bg-blue-400/10 text-blue-300{% else %}bg-white/5 text-slate-300{% endif %}">{{ user.role|title }}</span></td><td class="px-4 py-4 text-xs text-slate-400">{{ user.created_at.strftime('%d %b %Y') if user.created_at else '—' }}</td></tr>
+      {% else %}<tr><td colspan="3" class="px-5 py-10 text-center text-sm text-slate-500">No accounts found.</td></tr>{% endfor %}
+      </tbody></table></div>
+      <div class="px-5 py-3 border-t border-white/5 text-[11px] text-slate-500">Public sign-up is disabled. Only administrators can create accounts.</div>
+    </div>
+  </section>
+</div>
+<style>.crm-label{display:block;color:#94a3b8;font-size:.75rem}.crm-input{display:block;width:100%;margin-top:.4rem;border:1px solid rgba(148,163,184,.2);border-radius:.7rem;background:rgba(2,6,23,.48);padding:.7rem .8rem;color:#f1f5f9;font-size:.8rem;outline:none}.crm-input:focus{border-color:rgba(96,165,250,.65);box-shadow:0 0 0 2px rgba(59,130,246,.12)}.crm-input::placeholder{color:#64748b}</style>
+{% endblock %}

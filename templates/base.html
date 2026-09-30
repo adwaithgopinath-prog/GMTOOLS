@@ -255,6 +255,10 @@
                     <a href="{{ url_for('crm_leads') }}" class="sidebar-link {% if request.path.startswith('/crm/leads') %}active-link{% endif %}"><i data-feather="target" class="w-4 h-4"></i><span>Leads & pipeline</span></a>
                     <a href="{{ url_for('whatsapp_integration') }}" class="sidebar-link {% if request.path.startswith('/integrations/whatsapp') %}active-link{% endif %}"><i data-feather="message-circle" class="w-4 h-4"></i><span>WhatsApp inbox</span></a>
                 </div></details>
+                {% if current_user.is_authenticated and current_user.role == 'admin' %}
+                <p class="nav-section-label mt-5">Administration</p>
+                <a href="{{ url_for('user_management') }}" class="sidebar-link {% if request.path.startswith('/settings/users') %}active-link{% endif %}"><i data-feather="user-plus" class="w-4 h-4"></i><span>User management</span></a>
+                {% endif %}
             </nav>
 
             <!-- Bottom User Profile Card -->
@@ -291,6 +295,7 @@
                         <a href="{{ url_for('inventory_dashboard') }}">Inventory</a><a href="{{ url_for('products_page') }}">Product catalog</a>
                         <a href="{{ url_for('records_page', record_type='purchase-orders') }}">Purchase orders</a><a href="{{ url_for('goods_receipts') }}">Goods receipts</a><a href="{{ url_for('suppliers_page') }}">Suppliers</a>
                         <a href="{{ url_for('production_page') }}">Production & quality</a><a href="{{ url_for('customers_page') }}">Customers</a><a href="{{ url_for('crm_leads') }}">Leads & pipeline</a><a href="{{ url_for('whatsapp_integration') }}">WhatsApp inbox</a>
+                        {% if current_user.is_authenticated and current_user.role == 'admin' %}<a href="{{ url_for('user_management') }}">User management</a>{% endif %}
                     </nav>
                 </details>
                 <div class="toolbar-context"><span>GMTOOLS</span><i data-feather="chevron-right"></i><span>BUSINESS WORKSPACE</span></div>
