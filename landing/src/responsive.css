@@ -1,0 +1,8 @@
+@media (max-width: 760px) {
+  .hero { padding-top: clamp(112px, 19vh, 160px); padding-bottom: 100px; }
+  .scroll-cue { display: none; }
+}
+
+@media (max-width: 420px) {
+  .hero { padding-top: 112px; padding-bottom: 100px; }
+}

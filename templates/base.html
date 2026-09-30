@@ -3,169 +3,319 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}GMTools Dashboard{% endblock %}</title>
+    <title>{% block title %}GMTRADERS | Steel Intelligence Engine{% endblock %}</title>
     
     <!-- Modern Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- CSS Frameworks -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/feather-icons"></script>
+    <!-- Chart.js for Visual Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         :root {
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-bg: rgba(15, 23, 42, 0.65);
+            --glass-card: rgba(30, 41, 59, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-border-hover: rgba(59, 130, 246, 0.3);
         }
 
         body {
             font-family: 'Outfit', sans-serif;
-            background: radial-gradient(circle at top right, #1e293b, #0f172a);
+            background: radial-gradient(circle at 10% 20%, #0f172a 0%, #0b0f19 50%, #030712 100%);
+            color: #f1f5f9;
+        }
+
+        .font-mono-code {
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
+            background: var(--glass-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--glass-border);
-            border-radius: 1rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 1.25rem;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .glass-card:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-4px);
+            border-color: var(--glass-border-hover);
+            box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5), 0 0 20px -5px rgba(59, 130, 246, 0.15);
         }
 
+        .glass-nav { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px); }
+
         .sidebar-link {
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
         }
 
         .sidebar-link:hover {
-            background: rgba(59, 130, 246, 0.15);
-            color: #3b82f6;
+            background: rgba(59, 130, 246, 0.12);
+            color: #60a5fa;
+            transform: translateX(3px);
         }
 
         .active-link {
-            background: rgba(59, 130, 246, 0.2);
-            color: #3b82f6;
-            border-right: 4px solid #3b82f6;
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.22) 0%, rgba(59, 130, 246, 0.05) 100%);
+            color: #60a5fa;
+            font-weight: 600;
+            border-left: 3px solid #3b82f6;
         }
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
+            height: 6px;
         }
         ::-webkit-scrollbar-track {
             background: transparent;
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.12);
             border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(59, 130, 246, 0.4);
+        }
+
+        /* Pulsing dot */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+        .pulse-live {
+            animation: pulse-ring 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+        }
+
+        /* Shared visual system aligned with the GMTOOLS landing page. */
+        :root {
+            --app-bg: #080a0d;
+            --app-surface: #0d1014;
+            --app-surface-raised: #11161b;
+            --app-border: rgba(235, 240, 244, .095);
+            --app-muted: #8e989f;
+            --app-accent: #a9bfd0;
+            --app-text: #edf0f2;
+        }
+        body { font-family: 'DM Sans', sans-serif; background: var(--app-bg); color: var(--app-text); }
+        h1, h2, h3, h4, .font-extrabold, .font-black { font-family: 'Manrope', 'DM Sans', sans-serif; letter-spacing: -.035em; }
+        body > .flex.h-screen { background: var(--app-bg); }
+        aside.w-64 { width: 238px; background: #090b0e !important; border-color: var(--app-border) !important; backdrop-filter: none; }
+        aside .p-6.pb-5 { min-height: 76px; padding: 0 22px; border-color: var(--app-border) !important; }
+        aside .w-10.h-10 { width: 30px; height: 30px; border: 1px solid rgba(226,233,241,.48); border-radius: 4px; background: transparent; box-shadow: none; }
+        aside .w-10.h-10 svg { width: 16px; height: 16px; color: #e8edf0; }
+        aside h1 { font-size: 13px; letter-spacing: .045em; }
+        aside h1 span { border-radius: 3px; }
+        aside nav { padding: 0 12px; margin-top: 16px; }
+        .sidebar-link { display: flex; align-items: center; gap: 11px; min-height: 38px; padding: 0 12px; border-radius: 5px !important; color: #aeb7bd !important; font-size: 12px; text-decoration: none; }
+        .sidebar-link svg { color: #89969f; flex: none; }
+        .sidebar-link.active-link svg { color: #d9e2e8; }
+        .nav-section-label { margin: 18px 0 5px; padding: 0 12px; color: #68747c; font-size: 9px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
+        .nav-section-label:first-child { margin-top: 0; }
+        .nav-group { margin: 4px 0; }
+        .nav-group summary { display:flex; align-items:center; justify-content:space-between; min-height:36px; padding:0 12px; list-style:none; color:#7f8a91; font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; border-radius:4px; }
+        .nav-group summary::-webkit-details-marker { display:none; }
+        .nav-group summary:hover { color:#e9edf0; background:rgba(255,255,255,.035); }
+        .nav-group summary svg { width:13px;height:13px;transition:transform .18s ease; }
+        .nav-group[open] summary svg { transform:rotate(90deg); }
+        .nav-group-links { display:grid; gap:2px; padding:2px 0 5px; }
+        .nav-group-links .sidebar-link { min-height:34px; padding-left:14px; font-size:11px; }
+        .sidebar-link:hover { background: rgba(255,255,255,.055) !important; color: #f4f6f7 !important; transform: none; }
+        .sidebar-link.active-link { border-left: 2px solid #b6c8d5; background: rgba(255,255,255,.075) !important; color: #f5f7f8 !important; }
+        aside .border-t { border-color: var(--app-border) !important; }
+        aside .bg-slate-900\/60 { background: rgba(255,255,255,.035) !important; border-color: var(--app-border) !important; border-radius: 6px !important; }
+        main.flex-1 { background: var(--app-bg) !important; }
+        main > header { min-height: 58px; height: 58px; padding-left: clamp(18px, 2.4vw, 36px); padding-right: clamp(18px, 2.4vw, 36px); background: rgba(8,10,13,.94) !important; border-color: var(--app-border) !important; backdrop-filter: blur(14px); }
+        main > header .rounded-full.bg-emerald-500\/10 { border-radius: 4px; border-color: rgba(255,255,255,.12); background: rgba(255,255,255,.04); color: #c0d5df; font-size: 10px; }
+        main > header .pulse-live { box-shadow: none; animation: none; }
+        main > .flex-1.overflow-y-auto { padding: clamp(18px, 2.5vw, 38px); }
+        .glass-card { background: var(--app-surface) !important; border: 1px solid var(--app-border) !important; border-radius: 10px !important; box-shadow: none !important; backdrop-filter: none !important; transition: border-color .18s ease, background .18s ease; }
+        .glass-card:hover { border-color: rgba(208,220,228,.2) !important; box-shadow: none !important; }
+        .glass-card[class*="bg-gradient"] { background: var(--app-surface) !important; }
+        main button.group { background: #11161b !important; border-color: var(--app-border) !important; border-radius: 6px !important; box-shadow: none !important; }
+        main button.group:hover { background: #171d22 !important; border-color: rgba(208,220,228,.24) !important; }
+        main button.group > div { border-radius: 5px !important; }
+        main input, main select, main textarea { border-radius: 5px !important; background-color: #0b0e11 !important; color: #edf0f2 !important; }
+        main input::placeholder, main textarea::placeholder { color: #66727a !important; }
+        main summary { transition: color .18s ease; }
+        main summary:hover { color: #fff; }
+        main details > summary::-webkit-details-marker { display: none; }
+        main .animate-fade-in { animation: none; }
+        button, a { -webkit-tap-highlight-color: transparent; }
+        button[class*="rounded-2xl"], button[class*="rounded-xl"], a[class*="rounded-2xl"], a[class*="rounded-xl"] { border-radius: 5px !important; }
+        button[class*="bg-blue-600"], button[class*="bg-indigo-600"], a[class*="bg-blue-600"], a[class*="bg-indigo-600"] { background: #e8ecef !important; color: #111519 !important; box-shadow: none !important; }
+        button[class*="bg-blue-600"]:hover, button[class*="bg-indigo-600"]:hover, a[class*="bg-blue-600"]:hover { background: #fff !important; }
+        input, select, textarea { font-family: 'DM Sans', sans-serif; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: rgba(181,204,219,.6) !important; box-shadow: 0 0 0 3px rgba(169,191,208,.1) !important; }
+        table thead { background: rgba(255,255,255,.025) !important; }
+        table th { color: #87929a !important; font-weight: 600; letter-spacing: .09em; }
+        table tbody tr:hover { background: rgba(255,255,255,.025) !important; }
+        .mobile-navigation { display: none; }
+        @media (max-width: 760px) {
+            body > .flex.h-screen { height: 100dvh; }
+            aside.w-64 { display: none; }
+            main > header { padding: 0 14px; }
+            main > .flex-1.overflow-y-auto { padding: 18px 14px 28px; }
+            .mobile-navigation { display: block; position: relative; margin-right: auto; }
+            .mobile-navigation summary { display: flex; align-items: center; gap: 7px; list-style: none; cursor: pointer; color: #dce2e6; font-size: 12px; }
+            .mobile-navigation summary::-webkit-details-marker { display: none; }
+            .mobile-navigation nav { position: absolute; top: 36px; left: 0; z-index: 60; width: min(280px, calc(100vw - 28px)); padding: 8px; border: 1px solid var(--app-border); border-radius: 8px; background: #101419; box-shadow: 0 18px 45px rgba(0,0,0,.55); }
+            .mobile-navigation nav a { display: block; padding: 11px 12px; border-radius: 4px; color: #c4cbd0; font-size: 13px; }
+            .mobile-navigation nav a:hover { background: rgba(255,255,255,.06); color: white; }
+            main > header .rounded-full.bg-emerald-500\/10 { display: none; }
+        }
+        /* Product-wide finish: restrained surfaces, predictable navigation, readable density. */
+        aside.w-64 { width:244px; background:#0a0d10 !important; }
+        aside .p-6.pb-5 { padding:0 20px; min-height:72px; }
+        aside nav { padding:0 10px; margin-top:16px; }
+        .nav-section-label { margin:5px 10px 8px; padding:0; color:#5f6d75; }
+        .nav-group { margin:3px 0; }
+        .nav-group summary { transition:background .16s,color .16s; }
+        .nav-group-links { padding-bottom:5px; }
+        .nav-group-links .sidebar-link { margin:0 3px; }
+        main > .flex-1.overflow-y-auto { padding:clamp(20px,2.4vw,34px); }
+        .app-toolbar { min-height:58px; height:58px; padding-left:clamp(18px,2.4vw,34px); padding-right:clamp(18px,2.4vw,34px); background:#0a0d10 !important; border-color:rgba(220,230,236,.08) !important; }
+        .toolbar-context { display:flex;align-items:center;gap:8px;color:#74818a;font-size:9px;font-weight:700;letter-spacing:.1em; }
+        .toolbar-context span:first-child { color:#dce3e7; }
+        .toolbar-context svg { width:12px;height:12px;color:#53616a; }
+        .toolbar-actions { display:flex;align-items:center;gap:12px; }
+        .toolbar-create { position:relative; }
+        .toolbar-create summary { display:flex;align-items:center;gap:6px;list-style:none;padding:8px 11px;border:1px solid rgba(220,230,236,.16);border-radius:5px;color:#e7ecef;font-size:10px;font-weight:600;cursor:pointer; }
+        .toolbar-create summary::-webkit-details-marker { display:none; }
+        .toolbar-create summary:hover { background:rgba(255,255,255,.06); }
+        .toolbar-create summary svg { width:13px;height:13px; }
+        .toolbar-menu { position:absolute;z-index:70;right:0;top:38px;width:180px;padding:5px;border:1px solid var(--app-border);border-radius:6px;background:#10151a;box-shadow:0 14px 40px #0009; }
+        .toolbar-menu a { display:block;padding:9px 10px;border-radius:4px;color:#bac4ca;font-size:10px;text-decoration:none; }
+        .toolbar-menu a:hover { background:rgba(255,255,255,.06);color:white; }
+        .app-flash { max-width:min(420px,45vw);padding:8px 11px;border:1px solid rgba(220,230,236,.13);border-radius:5px;background:#11171c;color:#dce4e8;font-size:10px; }
+        .app-flash-success { border-color:rgba(88,180,142,.25);color:#a7d7c2; }
+        .app-flash-danger,.app-flash-warning { border-color:rgba(220,140,120,.28);color:#e5b4a5; }
+        .glass-card { border-radius:7px !important; }
+        input,select,textarea { accent-color:#a9bdc8; }
+        button,a { transition:background-color .15s ease,border-color .15s ease,color .15s ease; }
+        @media(max-width:760px) {
+            .app-toolbar { justify-content:space-between;padding:0 14px; }
+            .toolbar-context { display:none; }
+            .toolbar-actions { margin-left:auto; }
+            .app-flash { max-width:55vw; }
+            main > .flex-1.overflow-y-auto { padding:18px 14px 28px; }
         }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
-<body class="text-slate-200 min-h-screen">
+<body class="text-slate-200 min-h-screen antialiased selection:bg-blue-600 selection:text-white">
 
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
-        <aside class="w-64 border-r border-slate-800 flex flex-col bg-slate-900/50 backdrop-blur-xl">
-            <div class="p-6 flex items-center gap-3">
-                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-                    <i data-feather="package" class="text-white w-6 h-6"></i>
+        <aside class="w-64 border-r border-slate-800/80 flex flex-col bg-slate-950/70 backdrop-blur-2xl select-none z-30 shrink-0">
+            <!-- Brand Logo -->
+            <div class="p-6 pb-5 flex items-center justify-between border-b border-slate-800/60">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-tr from-blue-700 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/30 border border-blue-400/30">
+                        <i data-feather="shield" class="text-white w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-black tracking-tight text-white flex items-center gap-1.5">
+                            GMTRADERS
+                        </h1>
+                        <p class="text-[10px] text-slate-400 font-semibold tracking-wider uppercase">Operations workspace</p>
+                    </div>
                 </div>
-                <h1 class="text-xl font-bold tracking-tight text-white">GMTools</h1>
             </div>
 
-            <nav class="flex-1 px-4 space-y-2 mt-4">
-                <a href="{{ url_for('index') }}" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl {% if request.path == '/' %}active-link text-blue-400{% endif %}">
-                    <i data-feather="grid" class="w-5 h-5"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="{{ url_for('sales_page') }}" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl {% if request.path == '/sales' %}active-link text-blue-400{% endif %}">
-                    <i data-feather="trending-up" class="w-5 h-5"></i>
-                    <span>Sales Overview</span>
-                </a>
-                <a href="{{ url_for('whatsapp_order') }}" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl {% if request.path == '/whatsapp_order' %}active-link text-blue-400{% endif %}">
-                    <i data-feather="message-circle" class="w-5 h-5"></i>
-                    <span>WhatsApp Parse</span>
-                </a>
-                <div class="pt-6 pb-2 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Management</div>
-                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400">
-                    <i data-feather="users" class="w-5 h-5"></i>
-                    <span>Distributors</span>
-                </a>
-                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400">
-                    <i data-feather="settings" class="w-5 h-5"></i>
-                    <span>Settings</span>
-                </a>
+            <!-- Navigation Links -->
+            <nav class="app-sidebar-nav flex-1 px-3 space-y-1 mt-4 overflow-y-auto">
+                <p class="nav-section-label">Workspace</p>
+                <a href="{{ url_for('index') }}" class="sidebar-link {% if request.path == '/dashboard' %}active-link{% endif %}"><i data-feather="grid" class="w-4 h-4"></i><span>Overview</span></a>
+                <details class="nav-group" {% if request.path in ['/sales','/records/sales-orders','/records/quotations','/records/invoices'] or request.path.startswith('/sales-orders') or request.path.startswith('/quotations') %}open{% endif %}><summary>Sales<i data-feather="chevron-right"></i></summary><div class="nav-group-links">
+                    <a href="{{ url_for('sales_page') }}" class="sidebar-link {% if request.path == '/sales' %}active-link{% endif %}"><i data-feather="bar-chart-2" class="w-4 h-4"></i><span>Analytics</span></a>
+                    <a href="{{ url_for('records_page', record_type='sales-orders') }}" class="sidebar-link {% if request.path == '/records/sales-orders' %}active-link{% endif %}"><i data-feather="shopping-cart" class="w-4 h-4"></i><span>Sales orders</span></a>
+                    <a href="{{ url_for('records_page', record_type='quotations') }}" class="sidebar-link {% if request.path == '/records/quotations' %}active-link{% endif %}"><i data-feather="clipboard" class="w-4 h-4"></i><span>Quotations</span></a>
+                    <a href="{{ url_for('records_page', record_type='invoices') }}" class="sidebar-link {% if request.path == '/records/invoices' %}active-link{% endif %}"><i data-feather="file-text" class="w-4 h-4"></i><span>Invoices</span></a>
+                </div></details>
+                <details class="nav-group" {% if request.path.startswith('/inventory') or request.path.startswith('/products') or request.path.startswith('/suppliers') or request.path.startswith('/goods-receipts') or request.path == '/records/purchase-orders' %}open{% endif %}><summary>Supply & inventory<i data-feather="chevron-right"></i></summary><div class="nav-group-links">
+                    <a href="{{ url_for('inventory_dashboard') }}" class="sidebar-link {% if request.path == '/inventory' %}active-link{% endif %}"><i data-feather="archive" class="w-4 h-4"></i><span>Inventory</span></a>
+                    <a href="{{ url_for('products_page') }}" class="sidebar-link {% if request.path.startswith('/products') %}active-link{% endif %}"><i data-feather="box" class="w-4 h-4"></i><span>Product catalog</span></a>
+                    <a href="{{ url_for('records_page', record_type='purchase-orders') }}" class="sidebar-link {% if request.path == '/records/purchase-orders' %}active-link{% endif %}"><i data-feather="truck" class="w-4 h-4"></i><span>Purchase orders</span></a>
+                    <a href="{{ url_for('goods_receipts') }}" class="sidebar-link {% if request.path.startswith('/goods-receipts') %}active-link{% endif %}"><i data-feather="inbox" class="w-4 h-4"></i><span>Goods receipts</span></a>
+                    <a href="{{ url_for('suppliers_page') }}" class="sidebar-link {% if request.path.startswith('/suppliers') %}active-link{% endif %}"><i data-feather="briefcase" class="w-4 h-4"></i><span>Suppliers</span></a>
+                </div></details>
+                <details class="nav-group" {% if request.path.startswith('/production') %}open{% endif %}><summary>Manufacturing<i data-feather="chevron-right"></i></summary><div class="nav-group-links">
+                    <a href="{{ url_for('production_page') }}" class="sidebar-link {% if request.path.startswith('/production') %}active-link{% endif %}"><i data-feather="tool" class="w-4 h-4"></i><span>Production & quality</span></a>
+                </div></details>
+                <details class="nav-group" {% if request.path.startswith('/customers') or request.path.startswith('/crm/leads') or request.path.startswith('/integrations/whatsapp') or request.path == '/whatsapp_order' %}open{% endif %}><summary>Customers<i data-feather="chevron-right"></i></summary><div class="nav-group-links">
+                    <a href="{{ url_for('customers_page') }}" class="sidebar-link {% if request.path.startswith('/customers') %}active-link{% endif %}"><i data-feather="users" class="w-4 h-4"></i><span>Customer records</span></a>
+                    <a href="{{ url_for('crm_leads') }}" class="sidebar-link {% if request.path.startswith('/crm/leads') %}active-link{% endif %}"><i data-feather="target" class="w-4 h-4"></i><span>Leads & pipeline</span></a>
+                    <a href="{{ url_for('whatsapp_integration') }}" class="sidebar-link {% if request.path.startswith('/integrations/whatsapp') %}active-link{% endif %}"><i data-feather="message-circle" class="w-4 h-4"></i><span>WhatsApp inbox</span></a>
+                </div></details>
             </nav>
 
-            <div class="p-4 border-t border-slate-800">
-                <div class="flex items-center gap-3 p-3 glass-card bg-slate-800/20">
-                    <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600">
-                        <i data-feather="user" class="w-5 h-5"></i>
+            <!-- Bottom User Profile Card -->
+            <div class="p-3 border-t border-slate-800/80 bg-slate-950/40">
+                <div class="flex items-center gap-3 p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/80">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center font-bold text-sm text-white shadow-sm">
+                        {{ current_user.username[:1].upper() if current_user.is_authenticated else 'A' }}
                     </div>
-                    <div class="flex-1 overflow-hidden">
-                        <p class="text-sm font-medium text-white truncate">{{ current_user.username }}</p>
-                        <p class="text-xs text-slate-400 truncate capitalize">{{ current_user.role }}</p>
+                    <div class="flex-1 overflow-hidden min-w-0">
+                        <p class="text-xs font-bold text-white truncate">{{ current_user.username if current_user.is_authenticated else 'Administrator' }}</p>
+                        <p class="text-[10px] text-slate-500 font-semibold truncate flex items-center gap-1">
+                            {{ current_user.role|title if current_user.is_authenticated and current_user.role else 'Workspace account' }}
+                        </p>
                     </div>
-                    <a href="{{ url_for('logout') }}" class="p-2 hover:bg-red-500/10 rounded-lg text-slate-400 hover:text-red-400 transition-colors">
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('logout') }}" title="Logout" class="p-2 hover:bg-rose-500/10 rounded-lg text-slate-400 hover:text-rose-400 transition-colors">
                         <i data-feather="log-out" class="w-4 h-4"></i>
                     </a>
+                    {% endif %}
                 </div>
             </div>
         </aside>
 
-        <!-- Main Content Area -->
-        <main class="flex-1 flex flex-col min-w-0 bg-slate-950/20">
-            <!-- Header -->
-            <header class="h-16 border-b border-slate-800 flex items-center justify-between px-8 bg-slate-900/30 backdrop-blur-md sticky top-0 z-50">
-                <div class="flex items-center gap-4">
-                    <div class="flex items-center gap-2 text-slate-400">
-                        <i data-feather="clock" class="w-4 h-4"></i>
-                        <span class="text-sm" id="live-time"></span>
-                    </div>
-                </div>
-                <div class="flex items-center gap-4">
-                     {% with messages = get_flashed_messages(with_categories=true) %}
+        <!-- Main Workspace -->
+        <main class="flex-1 flex flex-col min-w-0 bg-slate-950/30 overflow-hidden">
+            <!-- Header Toolbar -->
+            <header class="app-toolbar h-16 border-b border-slate-800/80 flex items-center justify-between px-8 bg-slate-950/60 sticky top-0 z-40">
+                <details class="mobile-navigation">
+                    <summary><i data-feather="menu" class="w-4 h-4"></i><span>GMTOOLS</span></summary>
+                    <nav>
+                        <a href="{{ url_for('index') }}">Overview</a>
+                        <a href="{{ url_for('sales_page') }}">Sales analytics</a><a href="{{ url_for('records_page', record_type='sales-orders') }}">Sales orders</a>
+                        <a href="{{ url_for('records_page', record_type='quotations') }}">Quotations</a><a href="{{ url_for('records_page', record_type='invoices') }}">Invoices</a>
+                        <a href="{{ url_for('inventory_dashboard') }}">Inventory</a><a href="{{ url_for('products_page') }}">Product catalog</a>
+                        <a href="{{ url_for('records_page', record_type='purchase-orders') }}">Purchase orders</a><a href="{{ url_for('goods_receipts') }}">Goods receipts</a><a href="{{ url_for('suppliers_page') }}">Suppliers</a>
+                        <a href="{{ url_for('production_page') }}">Production & quality</a><a href="{{ url_for('customers_page') }}">Customers</a><a href="{{ url_for('crm_leads') }}">Leads & pipeline</a><a href="{{ url_for('whatsapp_integration') }}">WhatsApp inbox</a>
+                    </nav>
+                </details>
+                <div class="toolbar-context"><span>GMTOOLS</span><i data-feather="chevron-right"></i><span>BUSINESS WORKSPACE</span></div>
+                <div class="toolbar-actions">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
                         {% if messages %}
                             {% for category, message in messages %}
-                                <div class="px-4 py-1.5 rounded-full text-xs font-medium bg-{{ 'blue' if category == 'success' else 'red' }}-500/10 text-{{ 'blue' if category == 'success' else 'red' }}-400 border border-{{ 'blue' if category == 'success' else 'red' }}-500/20 animate-pulse">
-                                    {{ message }}
-                                </div>
+                                <div class="app-flash app-flash-{{ category }}"><span>{{ message }}</span></div>
                             {% endfor %}
                         {% endif %}
                     {% endwith %}
+                    <details class="toolbar-create"><summary><i data-feather="plus"></i><span>Create</span></summary><div class="toolbar-menu">
+                        <a href="{{ url_for('records_page', record_type='quotations', new=1) }}">Quotation</a><a href="{{ url_for('records_page', record_type='sales-orders', new=1) }}">Sales order</a><a href="{{ url_for('records_page', record_type='purchase-orders', new=1) }}">Purchase order</a><a href="{{ url_for('goods_receipts') }}">Goods receipt</a><a href="{{ url_for('customers_page') }}">Customer</a><a href="{{ url_for('products_page', new=1) }}#new-product">Product</a>
+                    </div></details>
                 </div>
             </header>
 
-            <!-- Scrollable Content -->
-            <div class="flex-1 overflow-y-auto overflow-x-hidden p-8">
+            <!-- Scrollable Workspace Body -->
+            <div class="flex-1 overflow-y-auto overflow-x-hidden p-6 md:p-8">
                 {% block content %}{% endblock %}
             </div>
         </main>
     </div>
 
-    <!-- Scripts -->
-    <script>
-        // Init Icons
-        feather.replace();
-
-        // Live Clock
-        function updateTime() {
-            const now = new Date();
-            document.getElementById('live-time').innerText = now.toLocaleString();
-        }
-        setInterval(updateTime, 1000);
-        updateTime();
-    </script>
+    <script>if (window.feather) feather.replace();</script>
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>

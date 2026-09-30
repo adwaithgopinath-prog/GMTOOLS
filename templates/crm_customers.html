@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Customers & CRM | GMTOOLS{% endblock %}
+{% block content %}
+<div class="space-y-7 max-w-7xl mx-auto">
+  <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+    <div><p class="text-[11px] font-bold uppercase tracking-[.18em] text-blue-400">Customer relationship management</p><h1 class="text-3xl sm:text-4xl font-extrabold text-white mt-2">Customers</h1><p class="text-sm text-slate-400 mt-2">Every account, conversation and commercial detail in one place.</p></div>
+    <a href="{{ url_for('customers_page', new=1) }}#new-customer" class="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 px-4 py-3 text-sm font-semibold text-white"><i data-feather="user-plus" class="w-4 h-4"></i> Add customer</a>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="glass-card rounded-2xl p-5"><p class="text-xs uppercase tracking-wider text-slate-500">Customer accounts</p><p class="text-3xl font-bold text-white mt-2">{{ customers|length }}</p></div>
+    <a href="{{ url_for('crm_leads') }}" class="glass-card rounded-2xl p-5 hover:border-blue-500/30 transition"><p class="text-xs uppercase tracking-wider text-slate-500">Open pipeline</p><p class="text-3xl font-bold text-white mt-2">{{ open_leads }} <span class="text-sm font-medium text-blue-400">leads & prospects</span></p></a>
+    <div class="glass-card rounded-2xl p-5"><p class="text-xs uppercase tracking-wider text-slate-500">Upcoming follow-ups</p><p class="text-3xl font-bold text-white mt-2">{{ followups|length }}</p></div>
+  </div>
+
+  <details id="new-customer" class="glass-card rounded-2xl overflow-hidden" {% if request.args.get('new') %}open{% endif %}>
+    <summary class="cursor-pointer list-none flex items-center justify-between px-5 py-4 text-sm font-semibold text-white"><span class="flex items-center gap-2"><i data-feather="user-plus" class="w-4 h-4 text-blue-400"></i>Create customer profile</span><span class="text-xs font-normal text-slate-500">Identity, tax, addresses and primary contact</span></summary>
+    <form method="post" action="{{ url_for('customers_page') }}" class="border-t border-white/5 p-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      <label class="text-xs text-slate-400">Customer name *<input required name="name" class="crm-input" placeholder="Contact or account name"></label>
+      <label class="text-xs text-slate-400">Company<input name="company" class="crm-input" placeholder="Registered business name"></label>
+      <label class="text-xs text-slate-400">GSTIN<input name="gstin" class="crm-input" maxlength="15" placeholder="15-character GSTIN"></label>
+      <label class="text-xs text-slate-400">PAN<input name="pan" class="crm-input" maxlength="10" placeholder="PAN"></label>
+      <label class="text-xs text-slate-400">Phone<input name="phone" type="tel" class="crm-input" placeholder="Primary phone"></label>
+      <label class="text-xs text-slate-400">Email<input name="email" type="email" class="crm-input" placeholder="name@company.com"></label>
+      <label class="text-xs text-slate-400">City<input name="city" class="crm-input" placeholder="City"></label>
+      <label class="text-xs text-slate-400">Payment terms<input name="payment_terms" class="crm-input" placeholder="e.g. Net 30"></label>
+      <label class="text-xs text-slate-400">Credit limit (₹)<input name="credit_limit" type="number" min="0" step="0.01" class="crm-input" placeholder="0"></label>
+      <label class="text-xs text-slate-400 md:col-span-1 xl:col-span-1">Billing address<textarea name="billing_address" rows="2" class="crm-input" placeholder="Street, city, state, PIN"></textarea></label>
+      <label class="text-xs text-slate-400 md:col-span-1 xl:col-span-1">Shipping address<textarea name="shipping_address" rows="2" class="crm-input" placeholder="Delivery address"></textarea></label>
+      <div class="grid grid-cols-2 gap-3"><label class="text-xs text-slate-400">Primary contact<input name="contact_name" class="crm-input" placeholder="Contact person"></label><label class="text-xs text-slate-400">Designation<input name="contact_designation" class="crm-input" placeholder="Role"></label></div>
+      <label class="text-xs text-slate-400">Contact phone<input name="contact_phone" type="tel" class="crm-input" placeholder="Optional"></label>
+      <label class="text-xs text-slate-400">Contact email<input name="contact_email" type="email" class="crm-input" placeholder="Optional"></label>
+      <label class="text-xs text-slate-400 md:col-span-2 xl:col-span-3">Notes<textarea name="notes" rows="2" class="crm-input" placeholder="Account context, preferences or internal notes"></textarea></label>
+      <div class="md:col-span-2 xl:col-span-3 flex justify-end"><button class="rounded-xl bg-blue-600 hover:bg-blue-500 px-5 py-3 text-sm font-semibold text-white">Save customer</button></div>
+    </form>
+  </details>
+
+  <section class="glass-card rounded-2xl overflow-hidden">
+    <div class="px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/5"><div><h2 class="font-bold text-white">Customer directory</h2><p class="text-xs text-slate-500 mt-1">Search accounts and open their complete profile.</p></div><form method="get" class="flex gap-2"><input name="q" value="{{ query }}" class="crm-input !mt-0 !w-56" placeholder="Name, company, phone"><button class="rounded-lg bg-slate-800 px-3 text-sm text-slate-200">Search</button></form></div>
+    <div class="overflow-x-auto"><table class="w-full min-w-[760px] text-left"><thead class="text-[10px] uppercase tracking-wider text-slate-500 bg-white/[.02]"><tr><th class="px-5 py-3">Customer</th><th class="px-5 py-3">Contact</th><th class="px-5 py-3">GSTIN</th><th class="px-5 py-3">Terms</th><th class="px-5 py-3 text-right">Outstanding</th><th class="px-5 py-3"></th></tr></thead><tbody class="divide-y divide-white/5">
+    {% for customer in customers %}<tr class="hover:bg-white/[.025]"><td class="px-5 py-4"><a class="font-semibold text-white hover:text-blue-300" href="{{ url_for('customer_detail', customer_id=customer.id) }}">{{ customer.name }}</a><p class="text-xs text-slate-500 mt-1">{{ customer.company or customer.city or 'Individual account' }}</p></td><td class="px-5 py-4 text-xs text-slate-300">{{ customer.phone or '—' }}<p class="text-slate-500 mt-1">{{ customer.email or '' }}</p></td><td class="px-5 py-4 text-xs text-slate-400">{{ customer.profile.gstin if customer.profile else '—' }}</td><td class="px-5 py-4 text-xs text-slate-400">{{ customer.profile.payment_terms if customer.profile else '—' }}</td><td class="px-5 py-4 text-right text-sm text-slate-200">₹{{ '{:,.0f}'.format(customer.outstanding_balance or 0) }}</td><td class="px-5 py-4 text-right"><a href="{{ url_for('customer_detail', customer_id=customer.id) }}" class="text-xs text-blue-400 hover:text-blue-300">Open profile →</a></td></tr>{% else %}<tr><td colspan="6" class="px-5 py-12 text-center text-sm text-slate-500">No customer profiles yet. Add the first account above.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </section>
+
+  {% if followups %}<section class="glass-card rounded-2xl p-5"><h2 class="font-bold text-white mb-4">Follow-up reminders</h2><div class="space-y-2">{% for item in followups %}<div class="flex items-center justify-between gap-4 rounded-xl bg-white/[.025] px-4 py-3"><div><p class="text-sm text-white">{{ item.subject }}</p><p class="text-xs text-slate-500 mt-1">{% if item.customer %}{{ item.customer.name }}{% elif item.lead %}{{ item.lead.company or item.lead.contact_name }}{% else %}CRM activity{% endif %} · {{ item.follow_up_at.strftime('%d %b %Y, %H:%M') }}</p></div><form method="post" action="{{ url_for('complete_crm_followup', activity_id=item.id) }}"><button class="text-xs text-emerald-400 hover:text-emerald-300">Mark done</button></form></div>{% endfor %}</div></section>{% endif %}
+</div>
+<style>.crm-input{display:block;width:100%;margin-top:.4rem;border:1px solid rgba(148,163,184,.2);border-radius:.7rem;background:rgba(2,6,23,.48);padding:.7rem .8rem;color:#f1f5f9;font-size:.82rem;outline:none}.crm-input:focus{border-color:rgba(96,165,250,.65);box-shadow:0 0 0 2px rgba(59,130,246,.12)}.crm-input::placeholder{color:#64748b}</style>
+{% endblock %}

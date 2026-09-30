@@ -1,0 +1,9 @@
+Flask
+Flask-SQLAlchemy
+Flask-Login
+Flask-Migrate
+python-dotenv
+pandas
+openpyxl
+gunicorn
+psycopg[binary]

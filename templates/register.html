@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register | GMTools</title>
+  <title>Register | GMTRADERS</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/feather-icons"></script>
   <style>
@@ -29,6 +29,14 @@
       to { opacity: 1; transform: translateY(0); }
     }
     .animate-fade-up { animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+    body { position: relative; isolation: isolate; overflow-x: hidden; font-family: 'DM Sans', sans-serif; background: #080a0d; }
+    body::before { position: fixed; inset: 0 0 0 auto; width: 58vw; content: ''; z-index: -1; opacity: .19; background: linear-gradient(90deg,#080a0d 0%,rgba(8,10,13,.55) 44%,rgba(8,10,13,.35)),url('/assets/industrial-hero-CbfNoKdb.png') center/cover; }
+    .glass-card { background: rgba(13,16,20,.94); backdrop-filter: blur(14px); border: 1px solid rgba(235,240,244,.12); border-radius: 8px; }
+    h1 { font-family: 'Manrope', sans-serif; letter-spacing: -.04em; }
+    input { border-radius: 5px !important; background: #0a0d10 !important; border-color: rgba(235,240,244,.13) !important; }
+    button[type="submit"] { border-radius: 5px !important; background: #e8ecef !important; color: #111519 !important; box-shadow: none !important; letter-spacing: .01em; }
+    button[type="submit"]:hover { background: #fff !important; }
+    @media(max-width:640px) { body::before { width: 100vw; opacity: .1; } .glass-card { padding: 28px !important; } }
   </style>
 </head>
 <body class="text-slate-200 min-h-screen flex items-center justify-center p-6">
