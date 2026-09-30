@@ -18,17 +18,11 @@ On the first local run the app creates its SQLite tables and seeds development s
 The app is configured for a Render Python web service and managed PostgreSQL. Production requires `APP_ENV=production`, a PostgreSQL `DATABASE_URL`, and a private `FLASK_SECRET_KEY`; it uses Gunicorn, secure session cookies, and does not load development sample data. Public account registration is disabled in production.
 
 1. Push the project to GitHub, then in Render create a PostgreSQL database and a **Web Service** connected to this repository and branch.
-2. Set the web service build command to `pip install -r requirements.txt` and the start command to `gunicorn app:app`.
-3. Add these service environment variables in Render: `APP_ENV=production`, `DATABASE_URL` (the database's **internal** URL), and `FLASK_SECRET_KEY` (a long random value). Add the five `META_*` / `WHATSAPP_*` values when ready to connect WhatsApp. Never commit the values.
-4. Deploy once. Use the service Shell to run these commands **once** against the empty production database:
-
-   ```sh
-   flask --app app init-production-db
-   flask --app app create-admin
-   ```
-
-   `create-admin` prompts for the username, email, and password. The database bootstrap creates the current schema without demo customers, orders, or the development admin. Do not run the bootstrap against a database that already contains business data.
-5. Confirm the deployed login and core pages work, then connect the public HTTPS URL to Meta as described below.
+2. Set the web service build command to `pip install -r requirements.txt && cd landing && npm ci && npm run build` and the start command to `flask --app app production-bootstrap && gunicorn app:app`.
+3. Add these service environment variables in Render: `APP_ENV=production`, `DATABASE_URL` (the Supabase pooler URL), `FLASK_SECRET_KEY` (a long random value), `INITIAL_ADMIN_USERNAME`, `INITIAL_ADMIN_EMAIL`, and `INITIAL_ADMIN_PASSWORD` (at least 12 characters). Add the five `META_*` / `WHATSAPP_*` values when ready to connect WhatsApp. Never commit these values.
+4. Deploy. The start command creates the current schema in a new, empty database, records the migration baseline, and creates the first admin without demo records. **Do not use it to initialize a database that already contains business data.**
+5. After the first successful deploy, remove `INITIAL_ADMIN_USERNAME`, `INITIAL_ADMIN_EMAIL`, and `INITIAL_ADMIN_PASSWORD` from the Render Environment page and save changes to redeploy. The account remains in the database; the bootstrap will not reset its password.
+6. Confirm the deployed login and core pages work, then connect the public HTTPS URL to Meta as described below.
 
 For later schema changes, create and review an Alembic migration locally, then run `flask --app app db upgrade` against the production database as a controlled deploy step. Take a database backup before production schema changes. Render's free web services can sleep while idle; choose a plan that meets your operational and WhatsApp response needs.
 

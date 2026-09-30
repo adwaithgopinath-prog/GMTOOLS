@@ -11,7 +11,7 @@ from datetime import datetime, date, timedelta
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, send_from_directory, send_file
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from flask_migrate import Migrate, stamp
+from flask_migrate import Migrate, stamp, upgrade
 from werkzeug.middleware.proxy_fix import ProxyFix
 from sqlalchemy import inspect, event
 from sqlalchemy.exc import IntegrityError
@@ -79,6 +79,44 @@ def create_admin(username, email):
     db.session.add(user)
     db.session.commit()
     click.echo(f"Administrator {username} created.")
+
+
+@app.cli.command("production-bootstrap")
+def production_bootstrap():
+    """Initialize a new production DB and provision its first admin without Shell."""
+    if not Config.IS_PRODUCTION:
+        raise click.ClickException("Set APP_ENV=production before running the production bootstrap.")
+
+    if not inspect(db.engine).has_table("alembic_version"):
+        # The repository's original migration chain does not contain a full initial
+        # schema. Bootstrap a fresh database from current models, then record that
+        # schema as the migration baseline. Never run this against an existing DB.
+        db.create_all()
+        stamp(revision="head")
+    else:
+        upgrade(revision="head")
+
+    initial_admin = {
+        "username": os.environ.get("INITIAL_ADMIN_USERNAME", "").strip(),
+        "email": os.environ.get("INITIAL_ADMIN_EMAIL", "").strip(),
+        "password": os.environ.get("INITIAL_ADMIN_PASSWORD", ""),
+    }
+    supplied = [bool(value) for value in initial_admin.values()]
+    if any(supplied) and not all(supplied):
+        raise click.ClickException("Set all three INITIAL_ADMIN_* variables together, or remove them after creating the admin.")
+
+    if not User.query.first():
+        if not all(supplied):
+            raise click.ClickException("Set INITIAL_ADMIN_USERNAME, INITIAL_ADMIN_EMAIL, and INITIAL_ADMIN_PASSWORD to create the first admin.")
+        if len(initial_admin["password"]) < 12:
+            raise click.ClickException("INITIAL_ADMIN_PASSWORD must be at least 12 characters.")
+        user = User(username=initial_admin["username"], email=initial_admin["email"], role="admin")
+        user.set_password(initial_admin["password"])
+        db.session.add(user)
+        db.session.commit()
+        click.echo("Production database initialized and first administrator created.")
+    else:
+        click.echo("Production database is ready; an administrator already exists.")
 
 @login_manager.user_loader
 def load_user(user_id):
