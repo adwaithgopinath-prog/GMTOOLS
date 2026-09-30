@@ -125,6 +125,9 @@ def load_user(user_id):
 # Enable SQLite foreign key constraints
 @event.listens_for(Engine, "connect")
 def _set_sqlite_pragma(dbapi_connection, connection_record):
+    # PRAGMA is SQLite-specific; production PostgreSQL connections must skip it.
+    if not dbapi_connection.__class__.__module__.startswith(("sqlite3", "pysqlite3")):
+        return
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA foreign_keys=ON;")
     cursor.close()
