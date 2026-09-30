@@ -711,6 +711,18 @@ def landing_page():
     landing_dist = os.path.join(app.root_path, "landing", "dist")
     return send_from_directory(landing_dist, "index.html")
 
+
+@app.route("/robots.txt")
+def robots_txt():
+    return """User-agent: *
+Allow: /
+""", 200, {"Content-Type": "text/plain; charset=utf-8"}
+
+
+@app.route("/health")
+def health_check():
+    return {"status": "ok"}, 200
+
 @app.route("/assets/<path:filename>")
 def landing_asset(filename):
     return send_from_directory(os.path.join(app.root_path, "landing", "dist", "assets"), filename)

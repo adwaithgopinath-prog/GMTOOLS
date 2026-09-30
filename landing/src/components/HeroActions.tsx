@@ -1,5 +1,5 @@
-import { ArrowRight, Play } from 'lucide-react'
+import { ArrowRight, MoveDown } from 'lucide-react'
 
 export default function HeroActions() {
-  return <div className="hero-actions"><a className="primary-action" href="/register">Get Started <ArrowRight size={16} /></a><a className="secondary-action" href="#product"><span className="play-icon"><Play size={11} fill="currentColor" /></span>See How It Works</a></div>
+  return <div className="hero-actions"><a className="primary-action" href="/login">Sign in to GMTOOLS <ArrowRight size={16} /></a><a className="secondary-action" href="#operations"><span className="play-icon"><MoveDown size={13} /></span>Explore modules</a></div>
 }

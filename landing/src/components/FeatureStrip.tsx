@@ -7,5 +7,5 @@ const features = [
 ] as const
 
 export default function FeatureStrip() {
-  return <nav className="feature-strip" aria-label="GMTOOLS capabilities">{features.map(([icon, label]) => <FeatureItem key={label} icon={icon} label={label} />)}</nav>
+  return <nav id="operations" className="feature-strip" aria-label="GMTOOLS capabilities">{features.map(([icon, label]) => <FeatureItem key={label} icon={icon} label={label} />)}</nav>
 }
