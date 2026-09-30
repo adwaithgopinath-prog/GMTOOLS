@@ -1,3 +1,4 @@
+import os
 from logging.config import fileConfig
 from alembic import context
 from app import db  # Import your SQLAlchemy instance from app.py
@@ -6,7 +7,8 @@ from app import db  # Import your SQLAlchemy instance from app.py
 config = context.config
 
 # Logging
-fileConfig(config.config_file_name)
+if config.config_file_name and os.path.exists(config.config_file_name):
+    fileConfig(config.config_file_name)
 
 # Link Alembic to your models
 target_metadata = db.metadata
