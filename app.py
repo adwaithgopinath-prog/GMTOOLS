@@ -677,6 +677,13 @@ def landing_page():
 def landing_asset(filename):
     return send_from_directory(os.path.join(app.root_path, "landing", "dist", "assets"), filename)
 
+@app.route("/login-background")
+def login_background():
+    return send_from_directory(
+        os.path.join(app.root_path, "landing", "src", "assets"),
+        "industrial-hero.png", max_age=86400,
+    )
+
 @app.route("/favicon.svg")
 def landing_favicon():
     return send_from_directory(os.path.join(app.root_path, "landing", "dist"), "favicon.svg")

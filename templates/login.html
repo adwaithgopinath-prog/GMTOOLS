@@ -1,105 +1,113 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login | GMTRADERS</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080a0d">
+  <title>Sign in | GMTOOLS</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/feather-icons"></script>
   <style>
-    body {
-      font-family: 'Outfit', sans-serif;
-      background: radial-gradient(circle at top right, #1e293b, #0f172a);
-    }
-    .glass-card {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 1.5rem;
-    }
-    input:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-    }
-    @keyframes fade-up {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-fade-up { animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
-    body { position: relative; isolation: isolate; overflow-x: hidden; font-family: 'DM Sans', sans-serif; background: #080a0d; }
-    body::before { position: fixed; inset: 0 0 0 auto; width: 58vw; content: ''; z-index: -1; opacity: .19; background: linear-gradient(90deg,#080a0d 0%,rgba(8,10,13,.55) 44%,rgba(8,10,13,.35)),url('/assets/industrial-hero-CbfNoKdb.png') center/cover; }
-    .glass-card { background: rgba(13,16,20,.94); backdrop-filter: blur(14px); border: 1px solid rgba(235,240,244,.12); border-radius: 8px; }
-    h1 { font-family: 'Manrope', sans-serif; letter-spacing: -.04em; }
-    input { border-radius: 5px !important; background: #0a0d10 !important; border-color: rgba(235,240,244,.13) !important; }
-    button[type="submit"] { border-radius: 5px !important; background: #e8ecef !important; color: #111519 !important; box-shadow: none !important; letter-spacing: .01em; }
-    button[type="submit"]:hover { background: #fff !important; }
-    @media(max-width:640px) { body::before { width: 100vw; opacity: .1; } .glass-card { padding: 28px !important; } }
+    :root{font-family:'DM Sans',sans-serif;color:#f1f2f3;background:#080a0d;font-synthesis:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
+    *{box-sizing:border-box}body{margin:0;min-width:320px;min-height:100vh;min-height:100svh;background:#080a0d}
+    a{color:inherit;text-decoration:none}button,input{font:inherit}
+    .auth-layout{min-height:100vh;min-height:100svh;display:grid;grid-template-columns:minmax(0,1.08fr) minmax(440px,.92fr);background:#080a0d}
+    .visual{position:relative;isolation:isolate;display:flex;flex-direction:column;justify-content:space-between;min-height:100%;padding:34px clamp(28px,5.3vw,78px);overflow:hidden;background:#090c10}
+    .visual::before,.visual::after{position:absolute;inset:0;z-index:-1;content:''}
+    .visual::before{background:url('/login-background') center 54%/cover no-repeat;transform:scale(1.015);animation:arrive 1s ease-out both}
+    .visual::after{background:linear-gradient(90deg,rgba(5,7,9,.94) 0%,rgba(5,7,9,.74) 40%,rgba(5,7,9,.26) 100%),linear-gradient(0deg,rgba(5,7,9,.8),transparent 55%,rgba(5,7,9,.42))}
+    .wordmark{display:inline-flex;align-items:center;gap:11px;width:max-content;font:800 13px Manrope,sans-serif;letter-spacing:.12em}
+    .brand-mark{display:grid;place-items:center;width:30px;height:30px;border:1px solid rgba(238,242,246,.55);color:#f1f3f5;font-size:10px;letter-spacing:-.06em}
+    .visual-copy{max-width:540px;margin:70px 0 65px;animation:rise .7s .12s both}
+    .eyebrow{display:flex;align-items:center;gap:10px;margin:0 0 20px;color:#c1ccd4;font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase}
+    .eyebrow::before{width:22px;height:1px;background:#a7bdcc;content:''}
+    h1{max-width:520px;margin:0;color:#f3f4f5;font:600 clamp(38px,5.1vw,68px)/1.07 Manrope,sans-serif;letter-spacing:-.065em}
+    .visual-copy p{max-width:440px;margin:22px 0 0;color:rgba(228,233,237,.74);font-size:13px;line-height:1.8}
+    .visual-foot{display:flex;align-items:center;gap:10px;color:rgba(220,226,231,.56);font-size:9px;letter-spacing:.04em}
+    .visual-foot::before{width:6px;height:6px;border-radius:50%;background:#9ab2c3;box-shadow:0 0 12px rgba(154,178,195,.7);content:''}
+    .auth-side{display:flex;align-items:center;justify-content:center;padding:52px clamp(25px,6vw,92px);background:radial-gradient(ellipse at 50% 42%,rgba(29,41,52,.22),transparent 60%),#090c0f}
+    .auth-card{width:min(100%,390px);animation:rise .65s .08s both}
+    .mobile-brand{display:none}
+    .auth-kicker{margin:0 0 10px;color:#89959d;font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+    .auth-card h2{margin:0;color:#f0f2f4;font:600 31px/1.2 Manrope,sans-serif;letter-spacing:-.05em}
+    .auth-intro{margin:10px 0 29px;color:#89939b;font-size:12px;line-height:1.65}
+    .alerts{display:grid;gap:8px;margin-bottom:18px}.alert{padding:11px 12px;border:1px solid rgba(231,111,111,.18);border-radius:4px;background:rgba(150,43,43,.09);color:#e7a3a3;font-size:11px;line-height:1.5}
+    .alert.success{border-color:rgba(101,195,150,.2);background:rgba(44,124,87,.09);color:#a5d4bb}
+    .login-form{display:grid;gap:18px}.field{display:grid;gap:8px}.field label{color:#aab3ba;font-size:10px;font-weight:600;letter-spacing:.02em}
+    .input-wrap{position:relative}.input-icon{position:absolute;left:13px;top:50%;width:16px;height:16px;transform:translateY(-50%);color:#72808a;pointer-events:none}
+    .input-wrap input{width:100%;height:46px;padding:0 43px;border:1px solid rgba(225,232,238,.12);border-radius:4px;outline:0;background:#0c1014;color:#ecf0f2;font-size:12px;transition:border-color .18s,box-shadow .18s,background .18s}
+    .input-wrap input::placeholder{color:#56616a}.input-wrap input:hover{border-color:rgba(225,232,238,.2)}
+    .input-wrap input:focus{border-color:rgba(173,197,214,.64);background:#0e1318;box-shadow:0 0 0 3px rgba(145,175,196,.09)}
+    .reveal{position:absolute;right:8px;top:50%;display:grid;place-items:center;width:31px;height:31px;transform:translateY(-50%);border:0;border-radius:3px;background:transparent;color:#82909a;cursor:pointer}
+    .reveal:hover{background:rgba(255,255,255,.05);color:#e3e8eb}.reveal svg{width:15px;height:15px}
+    .submit{display:flex;align-items:center;justify-content:center;gap:10px;height:46px;margin-top:5px;border:1px solid #eef0f2;border-radius:4px;background:#e9ecef;color:#101418;font-size:11px;font-weight:700;letter-spacing:.025em;cursor:pointer;transition:background .18s,transform .18s}
+    .submit:hover{transform:translateY(-1px);background:#fff}.submit:focus-visible,.reveal:focus-visible,.back-link:focus-visible{outline:2px solid #abc2d4;outline-offset:3px}
+    .submit svg{width:15px;height:15px}.auth-help{margin:20px 0 0;color:#76828b;font-size:10px;line-height:1.6;text-align:center}
+    .auth-bottom{margin-top:42px;padding-top:17px;border-top:1px solid rgba(225,232,238,.08);display:flex;justify-content:space-between;gap:12px;color:#626e77;font-size:9px}
+    .back-link{color:#a8b5bd;transition:color .18s}.back-link:hover{color:white}
+    .dev-register{margin-top:18px;color:#76828b;font-size:10px;text-align:center}.dev-register a{color:#cbd4da;text-decoration:underline;text-decoration-color:rgba(203,212,218,.35);text-underline-offset:3px}
+    @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}@keyframes arrive{from{opacity:.68;transform:scale(1.04)}to{opacity:1;transform:scale(1.015)}}
+    @media(max-width:850px){.auth-layout{grid-template-columns:1fr;grid-template-rows:minmax(240px,35svh) 1fr}.visual{min-height:0;padding:23px 27px 28px}.visual-copy{margin:34px 0 0;max-width:570px}.visual-copy h1{font-size:clamp(34px,7vw,54px)}.visual-copy p{margin-top:12px;font-size:12px}.visual-foot{display:none}.auth-side{padding:40px 24px 32px}.auth-card{max-width:420px}.auth-bottom{margin-top:31px}}
+    @media(max-width:480px){.auth-layout{grid-template-rows:220px 1fr}.visual{padding:19px 21px 23px}.wordmark{font-size:11px}.brand-mark{width:26px;height:26px}.visual-copy{margin-top:20px}.visual-copy .eyebrow{margin-bottom:12px;font-size:8px}.visual-copy h1{font-size:36px}.visual-copy p{max-width:330px;margin-top:9px;font-size:11px}.auth-side{align-items:flex-start;padding:31px 23px 25px}.auth-card h2{font-size:28px}.auth-intro{margin-bottom:23px}.auth-bottom{font-size:8px}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
   </style>
 </head>
-<body class="text-slate-200 min-h-screen flex items-center justify-center p-6">
+<body>
+  <main class="auth-layout">
+    <section class="visual" aria-label="GMTOOLS operations workspace">
+      <a class="wordmark" href="/" aria-label="GMTOOLS home"><span class="brand-mark">GM</span><span>GMTOOLS</span></a>
+      <div class="visual-copy">
+        <p class="eyebrow">Business operations workspace</p>
+        <h1>Bring every part of the business into focus.</h1>
+        <p>Orders, inventory, purchasing and customer activity—connected in one clear command center.</p>
+      </div>
+      <div class="visual-foot">BUILT FOR THE STEEL &amp; CUTTING-TOOL INDUSTRY</div>
+    </section>
 
-<div class="w-full max-w-md animate-fade-up">
-    <div class="flex justify-center mb-10">
-        <div class="w-16 h-16 bg-blue-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-600/20">
-            <i data-feather="package" class="text-white w-8 h-8"></i>
-        </div>
-    </div>
-    
-    <div class="glass-card p-10 shadow-2xl shadow-slate-950/50">
-        <div class="text-center mb-10">
-            <h1 class="text-3xl font-extrabold text-white tracking-tight">Staff Authentication</h1>
-            <p class="text-slate-400 mt-2 font-medium italic">Secure access for GM Traders intel.</p>
-        </div>
+    <section class="auth-side" aria-label="Sign in">
+      <div class="auth-card">
+        <p class="auth-kicker">GMTOOLS · STAFF ACCESS</p>
+        <h2>Welcome back.</h2>
+        <p class="auth-intro">Sign in with the administrator or staff account set up for your workspace.</p>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                <div class="mb-6 p-4 rounded-xl text-sm font-medium bg-{{ 'blue' if category == 'success' else 'red' }}-500/10 text-{{ 'blue' if category == 'success' else 'red' }}-400 border border-{{ 'blue' if category == 'success' else 'red' }}-500/20">
-                    {{ message }}
-                </div>
-                {% endfor %}
-            {% endif %}
+          {% if messages %}<div class="alerts" role="status">{% for category, message in messages %}<div class="alert {{ 'success' if category == 'success' else '' }}">{{ message }}</div>{% endfor %}</div>{% endif %}
         {% endwith %}
 
-        <form method="post" action="/login" class="space-y-6">
-            <div class="space-y-2">
-                <label class="text-xs font-bold text-slate-500 uppercase italic tracking-widest ml-1">Username</label>
-                <div class="relative group">
-                    <i data-feather="user" class="absolute left-6 top-3.5 text-slate-500 w-5 h-5 group-focus-within:text-blue-400 transition-colors"></i>
-                    <input type="text" name="username" required placeholder="Floor ID"
-                           class="w-full bg-slate-900/50 border border-white/10 rounded-2xl py-3.5 px-14 text-white focus:outline-none transition-all placeholder:text-slate-600">
-                </div>
+        <form class="login-form" method="post" action="{{ url_for('login') }}">
+          <div class="field">
+            <label for="username">Username</label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg>
+              <input id="username" type="text" name="username" autocomplete="username" required autofocus placeholder="Your staff username">
             </div>
-            <div class="space-y-2">
-                <label class="text-xs font-bold text-slate-500 uppercase italic tracking-widest ml-1">Staff Access Key</label>
-                <div class="relative group">
-                    <i data-feather="lock" class="absolute left-6 top-3.5 text-slate-500 w-5 h-5 group-focus-within:text-blue-400 transition-colors"></i>
-                    <input type="password" name="password" required placeholder="••••••••"
-                           class="w-full bg-slate-900/50 border border-white/10 rounded-2xl py-3.5 px-14 text-white focus:outline-none transition-all placeholder:text-slate-600">
-                </div>
+          </div>
+          <div class="field">
+            <label for="password">Staff access key</label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14v3"/></svg>
+              <input id="password" type="password" name="password" autocomplete="current-password" required placeholder="Enter your password">
+              <button class="reveal" type="button" aria-label="Show password" aria-pressed="false" onclick="togglePassword(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
             </div>
-            
-            <button type="submit" class="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-extrabold rounded-2xl shadow-xl shadow-blue-600/20 transition-all active:scale-[0.98] mt-4 flex items-center justify-center gap-3">
-                <i data-feather="key" class="w-5 h-5"></i>
-                AUTHENTICATE ACCESS
-            </button>
+          </div>
+          <button class="submit" type="submit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5M15 12H3"/></svg>Sign in to Command Center</button>
         </form>
 
-        {% if not config.get('IS_PRODUCTION') %}<div class="mt-8 text-center">
-            <p class="text-slate-500 text-sm font-medium">New member of the crew? <a href="/register" class="text-blue-400 hover:text-blue-300 ml-1">Onboard here</a></p>
-        </div>{% endif %}
-    </div>
-    
-    <div class="mt-10 text-center opacity-30 italic">
-        <p class="text-xs text-slate-500 font-bold tracking-widest uppercase">GM TRADERS • STEEL INTEL v4.0</p>
-    </div>
-</div>
-
-<script>
-  feather.replace();
-</script>
+        <p class="auth-help">Need access? Contact your GMTOOLS administrator.</p>
+        {% if not config.get('IS_PRODUCTION') %}<p class="dev-register">New to the workspace? <a href="{{ url_for('register') }}">Create a local account</a></p>{% endif %}
+        <div class="auth-bottom"><a class="back-link" href="/">← Back to GMTOOLS</a><span>GM TRADERS · STEEL INTEL</span></div>
+      </div>
+    </section>
+  </main>
+  <script>
+    function togglePassword(button) {
+      const input = document.getElementById('password');
+      const showing = input.type === 'password';
+      input.type = showing ? 'text' : 'password';
+      button.setAttribute('aria-pressed', String(showing));
+      button.setAttribute('aria-label', showing ? 'Hide password' : 'Show password');
+    }
+  </script>
 </body>
 </html>
